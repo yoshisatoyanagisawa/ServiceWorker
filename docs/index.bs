@@ -3111,8 +3111,8 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
           1. Return null.
       1. Else if |registration|'s <a>active worker</a>'s [=service worker/list of router rules=] is [=list/is not empty=]:
           1. Let |source| be a result of running [=Get Router Source=] algorithm with |registration|'s <a>active worker</a> and |request|.
-          1. If |source| is "network", return null.
-          1. Else if |source| is "cache":
+          1. If |source| is {{RouterSource/"network"}}, return null.
+          1. Else if |source| is {{RouterSource/"cache"}}, then:
               1. Let |cache promise| be a result of {{cache/matchAll(|request|, {})}}
               1. [=Upon fulfillment=] of |cache promise| with |cache response|:
                   1. If |cache response| is not a {{Response}} object, return null.
