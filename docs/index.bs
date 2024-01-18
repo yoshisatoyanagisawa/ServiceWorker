@@ -3112,14 +3112,14 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
       1. If |request|'s [=request/destination=] is either "<code>embed</code>" or "<code>object</code>", then:
           1. Return null.
       1. Else if |registration|'s <a>active worker</a>'s [=service worker/list of router rules=] is [=list/is not empty=]:
-          1. Let |source| be a result of running [=Get Router Source=] algorithm with |registration|'s <a>active worker</a> and |request|.
+          1. Let |source| be the result of running [=Get Router Source=] algorithm with |registration|'s <a>active worker</a> and |request|.
           1. If |source| is {{RouterSource/"network"}}, return null.
           1. Else if |source| is {{RouterSource/"cache"}}, then:
               1. Let |requestResponses| be the result of running [=Query Cache=] with |request|.
               1. If |requestResponses| is an empty [=list=], return null.
               1. Else:
                   1. Let |requestResponse| be the first element of |requestResponses|.
-                  1. Let |response| be a copy of |requestResponse|'s response.
+                  1. Let |response| be |requestResponse|'s response.
                   1. Let |settingsObject| be a new [=environment settings object=].
                   1. Set |registration|'s <a>active worker</a>'s <a>script resource</a>'s [=script resource/policy container=] to |settingsObject|'s [=environment settings object/policy container=]
                   1. Let |cacheOrigin| be |registration|'s [=/storage key=]'s [=/origin=].
