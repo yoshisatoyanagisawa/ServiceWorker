@@ -3120,7 +3120,7 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
               1. Else:
                   1. Let |requestResponse| be the first element of |requestResponses|.
                   1. Let |response| be |requestResponse|'s response.
-                  1. Let |settingsObject| be a new [=environment settings object=].
+                  1. Let |settingsObject| be a copy of [=relevant settings object=].
                   1. Set |registration|'s <a>active worker</a>'s <a>script resource</a>'s [=script resource/policy container=] to |settingsObject|'s [=environment settings object/policy container=]
                   1. Let |cacheOrigin| be |registration|'s [=/storage key=]'s [=/origin=].
                   1. If |response|'s [=response/type=] is "`opaque`" and [=cross-origin resource policy check=] with |cacheOrigin|, |settingsObject|, "", and |response|'s [=filtered response/internal response=] returns <b>blocked</b>, then return null.
