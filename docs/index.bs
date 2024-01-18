@@ -3115,12 +3115,11 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
           1. Let |source| be a result of running [=Get Router Source=] algorithm with |registration|'s <a>active worker</a> and |request|.
           1. If |source| is {{RouterSource/"network"}}, return null.
           1. Else if |source| is {{RouterSource/"cache"}}, then:
-              1. Let |cache promise| be a result of {{cache/matchAll(|request|, {})}}
-              1. [=Upon fulfillment=] of |cache promise| with |cache response|:
-                  1. If |cache response| is not a {{Response}} object, return null.
-                  1. Set |response| to |cache response|.
-                  1. Return |response|
-              1. Return null.
+              1. Let |requestResponses| be the result of running [=Query Cache=] with |request|.
+              1. If |requestResponses| is an empty [=list=], return null.
+              1. Else:
+                  1. Let |requestResponse| be the first element of |requestResponses|.
+                  1. Let |response| be a copy of |requestResponse|'s response.
       1. Else if |request| is a <a>non-subresource request</a>, then:
           1. If |reservedClient| is not null and is an <a>environment settings object</a>, then:
               1. If |reservedClient| is not a <a>secure context</a>, return null.
