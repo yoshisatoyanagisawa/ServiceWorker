@@ -3116,6 +3116,7 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
       1. Let |client| be |request|'s [=request/client=].
       1. Let |reservedClient| be |request|'s [=request/reserved client=].
       1. Let |preloadResponse| be a new [=promise=].
+      1. Let |raceFetchController| be null.
       1. Let |workerRealm| be null.
       1. Let |eventHandled| be null.
       1. Let |timingInfo| be a new [=service worker timing info=].
@@ -3158,13 +3159,12 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
 
               Note: In order to avoid duplicated fetches to |request|, the user agent may reuse |raceNetworkRequestResponse| as the result of |e|'s [=FetchEvent/potential response=], or the fallback request.
 
-              1. Let |raceFetchController| be null.
               1. Run the following substeps [=in parallel=], but [=abort when=] |controller|'s [=fetch controller/state=] is "<code>terminated</code>" or "<code>aborted</code>":
                   1. Set |raceFetchController| to the result of [=Fetch|fetching=] |request|.
 
                       To [=fetch/processResponse=] for |raceNetworkRequestResponse|, run these substeps:
                           1. If |response| is not null, or |raceNetworkRequestResponse|'s [=response/type=] is "`error`", then:
-                            1. terminate these substeps.
+                            1. Terminate these substeps.
                           1. If |raceNetworkRequestResponse|'s [=response/status=] is `200`, then:
                             1. Set |response| to |raceNetworkRequestResponse|.
                             1. Return |response|.
@@ -3235,7 +3235,11 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
               1. If |response| is null, |request|'s [=request/body=] is not null, and |request|'s [=request/body=]'s [=body/source=] is null, then:
                   1. If |request|'s [=request/body=] is [=Body/unusable=], set |handleFetchFailed| to true.
                   1. Else, [=ReadableStream/cancel=] |request|'s [=request/body=] with undefined.
-              1. If |response| is not null, then set |response|'s [=response/service worker timing info=] to |timingInfo|.
+              1. If |response| is not null, then:
+                  1. Set |response|'s [=response/service worker timing info=] to |timingInfo|.
+                  1. If |raceFetchController| is not null, then:
+                      1. Let |deserializedError| be the result of [=deserialize a serialized abort reason=] given null and |workerRealm|.
+                      1. [=fetch controller/Abort=] |raceFetchController| with |deserializedError|.
               1. If |e|'s <a>canceled flag</a> is set, set |eventCanceled| to true.
               1. If |controller| [=fetch controller/state=] is "<code>terminated</code>" or "<code>aborted</code>", then:
                   1. Let |deserializedError| be a "{{AbortError}}" {{DOMException}}.
