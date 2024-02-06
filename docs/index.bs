@@ -3157,7 +3157,7 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
               1. Return null.
           1. Else if |source| is {{RouterSourceEnum/"race-network-and-fetch-handler"}}, and |request|'s [=request/method=] is \`<code>GET</code>\` then:
 
-              Note: In order to avoid duplicated fetches to |request|, the user agent may reuse |raceNetworkRequestResponse| as the result of |e|'s [=FetchEvent/potential response=], or the fallback request.
+              Note: In order to avoid duplicated fetches to |request|, the user agent may reuse |raceNetworkRequestResponse| as the result of {{FetchEvent}}'s [=FetchEvent/potential response=], or the fallback request.
 
               1. Run the following substeps [=in parallel=], but [=abort when=] |controller|'s [=fetch controller/state=] is "<code>terminated</code>" or "<code>aborted</code>":
                   1. Set |raceFetchController| to the result of [=Fetch|fetching=] |request|.
@@ -3168,10 +3168,10 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
                           1. If |raceNetworkRequestResponse|'s [=response/status=] is `200`, then:
                             1. Set |response| to |raceNetworkRequestResponse|.
                             1. Return |response|.
-          1. [=If aborted=], then:
-              1. Let |deserializedError| be the result of [=deserialize a serialized abort reason=] given null and |workerRealm|.
-              1. [=fetch controller/Abort=] |raceFetchController| with |deserializedError|.
-      1. If |request| is a <a>non-subresource request</a>, |request| is a [=navigation request=], |registration|'s [=navigation preload enabled flag=] is set, |request|'s [=request/method=] is \`<code>GET</code>\`, |registration|'s [=active worker=]'s [=set of event types to handle=] [=set/contains=] <code>fetch</code>, and |registration|'s [=active worker=]'s [=all fetch listeners are empty flag=] is not set then:
+              1. [=If aborted=], then:
+                  1. Let |deserializedError| be the result of [=deserialize a serialized abort reason=] given null and |workerRealm|.
+                  1. [=fetch controller/Abort=] |raceFetchController| with |deserializedError|.
+      1. If |request| is a <a>non-subresource request</a>, |request| is a [=navigation request=], |registration|'s [=navigation preload enabled flag=] is set, |request|'s [=request/method=] is \`<code>GET</code>\`, |registration|'s [=active worker=]'s [=set of event types to handle=] [=set/contains=] <code>fetch</code>, |registration|'s [=active worker=]'s [=all fetch listeners are empty flag=] is not set, and |raceFetchController| is null then:
 
           Note: If the above is true except |registration|'s [=active worker=]'s <a>set of event types to handle</a> **does not** contain <code>fetch</code>, then the user agent may wish to show a console warning, as the developer's intent isn't clear.
 
