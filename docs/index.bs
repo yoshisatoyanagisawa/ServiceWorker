@@ -3260,8 +3260,7 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
               1. If |response| is null, |request|'s [=request/body=] is not null, and |request|'s [=request/body=]'s [=body/source=] is null, then:
                   1. If |request|'s [=request/body=] is [=Body/unusable=], set |handleFetchFailed| to true.
                   1. Else, [=ReadableStream/cancel=] |request|'s [=request/body=] with undefined.
-              1. If |response| is not null, then:
-                  1. Set |response|'s [=response/service worker timing info=] to |timingInfo|.
+              1. If |response| is not null, then set |response|'s [=response/service worker timing info=] to |timingInfo|.
               1. If |e|'s <a>canceled flag</a> is set, set |eventCanceled| to true.
               1. If |controller| [=fetch controller/state=] is "<code>terminated</code>" or "<code>aborted</code>", then:
                   1. Let |deserializedError| be a "{{AbortError}}" {{DOMException}}.
