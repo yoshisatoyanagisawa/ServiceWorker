@@ -3155,13 +3155,17 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
               Note: In order to avoid duplicated fetches to |request|, the user agent may reuse |raceNetworkRequestResponse| as the result of {{FetchEvent}}'s [=FetchEvent/potential response=], or the fallback request.
 
               1. Let |queue| be an empty [=queue=] of [=/response=].
-              1. Run the following substeps [=in parallel=]:
-                  1. Let |raceFetchController| to the result of [=Fetch|fetching=] |request|.
+              1. Let |raceFetchController| be null.
+              1. Run the following substeps [=in parallel=], but [=abort when=] |controller|'s [=fetch controller/state=] is "<code>terminated</code>" or "<code>aborted</code>":
+                  1. Set |raceFetchController| to the result of [=Fetch|fetching=] |request|.
                   1. To [=fetch/processResponse=] for |raceNetworkRequestResponse|, run these substeps:
                       1. If |raceNetworkRequestResponse|'s [=response/type=] is "`error`", then:
                           1. Terminate these substeps.
                       1. If |raceNetworkRequestResponse|'s [=response/status=] is `200`, then:
                           1. [=queue/Enqueue=] |raceNetworkRequestResponse| to |queue|.
+              1. [=If aborted=], then:
+                  1. Let |deserializedError| be the result of [=deserialize a serialized abort reason=] given null and |workerRealm|.
+                  1. [=fetch controller/Abort=] |raceFetchController| with |deserializedError|.
               1. Run the following substeps [=in parallel=]:
                   1. Resolve |preloadResponse| with undefined.
                   1. Let |fetchHandlerResponse| to the result of [=Create Fetch Event and Dispatch=] with |request|, |registration|, |useHighResPerformanceTimers|, |timingInfo|, |workerRealm|, |reservedClient|, and |preloadResponse|.
@@ -3196,7 +3200,7 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
   </section>
 
   <section algorithm>
-    <h3 id="create-fetch-event-and-dispatch"><dfn>Create Fetch Event and Dispatch</dfn><h3>
+    <h3 id="create-fetch-event-and-dispatch-algorithm"><dfn>Create Fetch Event and Dispatch</dfn></h3>
       : Input
       :: |request|, a [=/request=]
       :: |registration|, a [=/service worker registration=]
