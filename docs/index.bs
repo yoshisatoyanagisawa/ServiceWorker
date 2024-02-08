@@ -3157,21 +3157,13 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
               1. Let |queue| be an empty [=queue=] of [=/response=].
               1. Let |raceFetchController| be null.
               1. Run the following substeps [=in parallel=], but [=abort when=] |controller|'s [=fetch controller/state=] is "<code>terminated</code>" or "<code>aborted</code>":
-                  1. Set |raceFetchController| to the result of [=Fetch|fetching=] |request|.
-                  1. To [=fetch/processResponse=] for |raceNetworkRequestResponse|, run these substeps:
-                      1. If |raceNetworkRequestResponse|'s [=response/type=] is "`error`", then:
-                          1. Terminate these substeps.
-                      1. If |raceNetworkRequestResponse|'s [=response/status=] is `200`, then:
-                          1. [=queue/Enqueue=] |raceNetworkRequestResponse| to |queue|.
-              1. [=If aborted=] and |raceFetchController| is not null, then:
-                  1. Let |deserializedError| be the result of [=deserialize a serialized abort reason=] given null and |workerRealm|.
-                  1. [=fetch controller/Abort=] |raceFetchController| with |deserializedError|.
+                  1. Set |raceFetchController| to the result of calling [=fetch=] given |request|, with [=fetch/processResponse=] set to the following steps given a [=/response=] |raceNetworkRequestResponse|:
+                      1. If |raceNetworkRequestResponse|'s [=response/status=] is [=ok status=], [=queue/enqueue=] |raceNetworkRequestResponse| to |queue|.
+                  1. [=If aborted=] and |raceFetchController| is not null, [=fetch controller/Abort=] |raceFetchController|.
+              1. Resolve |preloadResponse| with undefined.
               1. Run the following substeps [=in parallel=]:
-                  1. Resolve |preloadResponse| with undefined.
                   1. Let |fetchHandlerResponse| to the result of [=Create Fetch Event and Dispatch=] with |request|, |registration|, |useHighResPerformanceTimers|, |timingInfo|, |workerRealm|, |reservedClient|, and |preloadResponse|.
-                  1. If |fetchHandlerResponse| is not null and not a [=network error=], and |raceFetchController| is not null, then:
-                      1. Let |deserializedError| be the result of [=deserialize a serialized abort reason=] given null and |workerRealm|.
-                      1. [=fetch controller/Abort=] |raceFetchController| with |deserializedError|.
+                  1. If |fetchHandlerResponse| is not null and not a [=network error=], and |raceFetchController| is not null, [=fetch controller/Abort=] |raceFetchController|.
                   1. [=queue/Enqueue=] |fetchHandlerResponse| to |queue|.
               1. Wait until |queue| is not empty.
               1. Set |response| to the result of [=dequeue=] |queue|.
