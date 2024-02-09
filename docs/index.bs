@@ -2983,9 +2983,7 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
       :: a boolean
 
       Note: This algorithm returns true if |serviceWorker| has a {{ServiceWorkerGlobalScope}} usable for a CSP check.
-
       This algorithm does the minimal setup for the service worker that is necessary to create something usable for security checks like CSP and COEP. This specification ensures that this algorithm is called before any such checks are performed.
-
       In specifications, such security checks require creating a ServiceWorkerGlobalScope, a relevant settings object, a realm, and an agent. In implementations, the amount of work required might be much less. So, implementations could do less work in their equivalent of this algorithm, and more work in Run Service Worker, as long as the results are observably equivalent. (And in particular, as long as all security checks have the same result.)
 
 
