@@ -1578,7 +1578,12 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
       };
 
       enum RunningStatus { "running", "not-running" };
-      enum RouterSourceEnum { "cache", "fetch-event", "network", "race-network-and-fetch-handler" };
+      enum RouterSourceEnum {
+        "cache",
+        "fetch-event",
+        "network",
+        "race-network-and-fetch-handler"
+      };
     </pre>
 
     <section>
@@ -3106,9 +3111,8 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
       :: |controller|, a [=fetch controller=]
       :: |useHighResPerformanceTimers|, a boolean
       : Output
-      :: |response|, a [=/response=]
+      :: a [=/response=]
 
-      1. Let |response| be null.
       1. Let |registration| be null.
       1. Let |client| be |request|'s [=request/client=].
       1. Let |reservedClient| be |request|'s [=request/reserved client=].
@@ -3159,15 +3163,14 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
               1. Run the following substeps [=in parallel=], but [=abort when=] |controller|'s [=fetch controller/state=] is "<code>terminated</code>" or "<code>aborted</code>":
                   1. Set |raceFetchController| to the result of calling [=fetch=] given |request|, with [=fetch/processResponse=] set to the following steps given a [=/response=] |raceNetworkRequestResponse|:
                       1. If |raceNetworkRequestResponse|'s [=response/status=] is [=ok status=], [=queue/enqueue=] |raceNetworkRequestResponse| to |queue|.
-                  1. [=If aborted=] and |raceFetchController| is not null, [=fetch controller/Abort=] |raceFetchController|.
+              1. [=If aborted=] and |raceFetchController| is not null, [=fetch controller/abort=] |raceFetchController|.
               1. Resolve |preloadResponse| with undefined.
               1. Run the following substeps [=in parallel=]:
                   1. Let |fetchHandlerResponse| to the result of [=Create Fetch Event and Dispatch=] with |request|, |registration|, |useHighResPerformanceTimers|, |timingInfo|, |workerRealm|, |reservedClient|, and |preloadResponse|.
-                  1. If |fetchHandlerResponse| is not null and not a [=network error=], and |raceFetchController| is not null, [=fetch controller/Abort=] |raceFetchController|.
+                  1. If |fetchHandlerResponse| is not null and not a [=network error=], and |raceFetchController| is not null, [=fetch controller/abort=] |raceFetchController|.
                   1. [=queue/Enqueue=] |fetchHandlerResponse| to |queue|.
               1. Wait until |queue| is not empty.
-              1. Set |response| to the result of [=dequeue=] |queue|.
-              1. Return |response|.
+              1. Return the result of [=dequeue=] |queue|.
       1. If |request| is a <a>non-subresource request</a>, |request| is a [=navigation request=], |registration|'s [=navigation preload enabled flag=] is set, |request|'s [=request/method=] is \`<code>GET</code>\`, |registration|'s [=active worker=]'s [=set of event types to handle=] [=set/contains=] <code>fetch</code>, and |registration|'s [=active worker=]'s [=all fetch listeners are empty flag=] is not set, then:
 
           Note: If the above is true except |registration|'s [=active worker=]'s <a>set of event types to handle</a> **does not** contain <code>fetch</code>, then the user agent may wish to show a console warning, as the developer's intent isn't clear.
@@ -3190,8 +3193,7 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
               1. Let |deserializedError| be the result of [=deserialize a serialized abort reason=] given null and |workerRealm|.
               1. [=fetch controller/Abort=] |preloadFetchController| with |deserializedError|.
       1. Else, resolve |preloadResponse| with undefined.
-      1. Set |response| to the result of [=Create Fetch Event and Dispatch=] with |request|, |registration|, |useHighResPerformanceTimers|, |timingInfo|, |workerRealm|, |reservedClient|, and |preloadResponse|.
-      1. Retrun |response|.
+      1. Return the result of [=Create Fetch Event and Dispatch=] with |request|, |registration|, |useHighResPerformanceTimers|, |timingInfo|, |workerRealm|, |reservedClient|, and |preloadResponse|.
   </section>
 
   <section algorithm>
@@ -3205,8 +3207,9 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
       :: |reservedClient|, a [=request/reserved client=].
       :: |preloadResponse| a [=promise=].
       : Output
-      :: |response|, a [=/response=]
+      :: a [=/response=]
 
+      1. Let |response| be null.
       1. Let |eventCanceled| be false.
       1. Let |client| be |request|'s [=request/client=].
       1. Let |activeWorker| be |registration|'s <a>active worker</a>.
