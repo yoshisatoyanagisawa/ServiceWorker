@@ -3186,7 +3186,7 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
               1. Return null.
           1. Else if |source| is {{RouterSourceEnum/"cache"}}, or |source|["{{RouterSourceDict/cacheName}}"] [=map/exists=], then:
               1. If |shouldSoftUpdate| is true, then [=in parallel=] run the [=Soft Update=] algorithm with |registration|.
-              1. [=map/For each=] |cacheName| &#x2192; |cache| of the [=relevant name to cache map=]:
+              1. [=map/For each=] |cacheName| &#x2192; |cache| of the |registration|'s [=service worker registration/storage key=]'s [=name to cache map=].
                   1. If |source|["{{RouterSourceDict/cacheName}}"] [=map/exists=] and |source|["{{RouterSourceDict/cacheName}}"] [=string/is=] not |cacheName|, [=continue=].
                   1. Let |requestResponses| be the result of running [=Query Cache=] with |request|, a new {{CacheQueryOptions}}, and |cache|.
                   1. If |requestResponses| is an empty [=list=], return null.
