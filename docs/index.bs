@@ -66,6 +66,7 @@ spec: ecma-262; urlPrefix: http://tc39.github.io/ecma262/
         text: IsCallable; url: sec-iscallable
         text: Get; url: sec-get-o-p
     type: dfn
+        text: agent;
         text: Assert; url: sec-algorithm-conventions
         text: \[[Call]]; url: sec-ecmascript-function-objects-call-thisargument-argumentslist
         text: promise; url: sec-promise-objects
@@ -3128,6 +3129,7 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
 
           1. [=Abort a running script|Abort the script=] currently running in |serviceWorker|.
           1. Set |serviceWorker|'s [=start status=] to null.
+          1. Unset |serviceWorker|'s [=ServiceWorkerGlobalScope is ready=].
   </section>
 
   <section algorithm>
