@@ -3174,7 +3174,7 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
           1. If |client|'s <a>active service worker</a> is non-null, set |registration| to |client|'s <a>active service worker</a>'s <a>containing service worker registration</a>.
           1. Else, return null.
       1. Let |activeWorker| be |registration|'s <a>active worker</a>.
-      1. If |activeWorker|'s [=service worker/list of router rules=] is [=list/is not empty=]:
+      1. If |activeWorker|'s [=service worker/list of router rules=] [=list/is not empty=]:
           1. Let |source| be the result of running the [=Get Router Source=] algorithm with |registration|'s <a>active worker</a> and |request|.
           1. If |source| is {{RouterSourceEnum/"network"}}, return null.
           1. Else if |source| is {{RouterSourceEnum/"cache"}}, or |source|["{{RouterSourceDict/cacheName}}"] [=map/exists=], then:
