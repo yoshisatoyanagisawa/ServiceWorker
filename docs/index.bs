@@ -3174,10 +3174,16 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
           1. If |client|'s <a>active service worker</a> is non-null, set |registration| to |client|'s <a>active service worker</a>'s <a>containing service worker registration</a>.
           1. Else, return null.
       1. Let |activeWorker| be |registration|'s <a>active worker</a>.
+      1. Let |shouldSoftUpdate| be true if any of the following are true, and false otherwise:
+          * |request| is a [=non-subresource request=].
+          * |request| is a [=subresource request=] and |registration| is [=stale=].
       1. If |activeWorker|'s [=service worker/list of router rules=] [=list/is not empty=]:
           1. Let |source| be the result of running the [=Get Router Source=] algorithm with |registration|'s <a>active worker</a> and |request|.
-          1. If |source| is {{RouterSourceEnum/"network"}}, return null.
+          1. If |source| is {{RouterSourceEnum/"network"}}:
+              1. If |shouldSoftUpdate| is true, then [=in parallel=] run the [=Soft Update=] algorithm with |registration|.
+              1. Return null.
           1. Else if |source| is {{RouterSourceEnum/"cache"}}, or |source|["{{RouterSourceDict/cacheName}}"] [=map/exists=], then:
+              1. If |shouldSoftUpdate| is true, then [=in parallel=] run the [=Soft Update=] algorithm with |registration|.
               1. [=map/For each=] |cacheName| &#x2192; |cache| of the [=relevant name to cache map=]:
                   1. If |source|["{{RouterSourceDict/cacheName}}"] [=map/exists=] and |source|["{{RouterSourceDict/cacheName}}"] [=string/is=] not |cacheName|, [=continue=].
                   1. Let |requestResponses| be the result of running [=Query Cache=] with |request|, a new {{CacheQueryOptions}}, and |cache|.
@@ -3217,9 +3223,6 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
               1. Let |deserializedError| be the result of [=deserialize a serialized abort reason=] given null and |workerRealm|.
               1. [=fetch controller/Abort=] |preloadFetchController| with |deserializedError|.
       1. Else, resolve |preloadResponse| with undefined.
-      1. Let |shouldSoftUpdate| be true if any of the following are true, and false otherwise:
-          * |request| is a [=non-subresource request=].
-          * |request| is a [=subresource request=] and |registration| is [=stale=].
       1. If the result of running the [=Should Skip Event=] algorithm with "fetch" and |activeWorker| is true, then:
           1. If |shouldSoftUpdate| is true, then [=in parallel=] run the [=Soft Update=] algorithm with |registration|.
           1. Return null.
