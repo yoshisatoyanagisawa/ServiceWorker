@@ -1081,7 +1081,7 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
 
     A {{ServiceWorkerGlobalScope}} object represents the global execution context of a [=/service worker=]. A {{ServiceWorkerGlobalScope}} object has an associated <dfn export for="ServiceWorkerGlobalScope">service worker</dfn> (a [=/service worker=]). A {{ServiceWorkerGlobalScope}} object has an associated <dfn for="ServiceWorkerGlobalScope">force bypass cache for import scripts flag</dfn>. A {{ServiceWorkerGlobalScope}} object has an associated <dfn for="ServiceWorkerGlobalScope">race response map</dfn> which is an [=ordered map=] where the [=map/keys=] are [=requests=] and the [=map/values=] are [=race response=]. It is initially unset.
 
-    A <dfn export id="dfn-race-response">race response</dfn> is a [=struct=] used to contain the network response when {{RouterSourceEnum/"race-network-and-fetch-handler"}} performs. It has [=/response=], or "<code>pending</code>" as an [=struct/item=].
+    A <dfn id="dfn-race-response">race response</dfn> is a [=struct=] used to contain the network response when {{RouterSourceEnum/"race-network-and-fetch-handler"}} performs. It has a <dfn for="race response">value</dfn>, which is a [=/response=], "<code>pending</code>", or null.
 
     Note: {{ServiceWorkerGlobalScope}} object provides generic, event-driven, time-limited script execution contexts that run at an origin. Once successfully <a>registered</a>, a [=/service worker=] is started, kept alive and killed by their relationship to events, not [=/service worker clients=]. Any type of synchronous requests must not be initiated inside of a [=/service worker=].
 
@@ -3121,7 +3121,7 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
       1. Let |preloadResponse| be a new [=promise=].
       1. Let |workerRealm| be null.
       1. Let |timingInfo| be a new [=service worker timing info=].
-      1. Let |raceResponse| be null.
+      1. Let |raceResponse| be a [=race response=] whose [=race response/value=] is null.
       1. Assert: |request|'s [=request/destination=] is not "<code>serviceworker</code>".
       1. If |request|'s [=request/destination=] is either "<code>embed</code>" or "<code>object</code>", then:
           1. Return null.
@@ -3160,16 +3160,16 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
           1. Else if |source| is {{RouterSourceEnum/"race-network-and-fetch-handler"}}, and |request|'s [=request/method=] is \`<code>GET</code>\` then:
               1. Let |queue| be an empty [=queue=] of [=/response=].
               1. Let |raceFetchController| be null.
-              1. Set |raceResponse| to "<code>pending</code>".
+              1. Set |raceResponse|'s [=race response/value=] to "<code>pending</code>".
               1. Run the following substeps [=in parallel=], but [=abort when=] |controller|'s [=fetch controller/state=] is "<code>terminated</code>" or "<code>aborted</code>":
                   1. Set |raceFetchController| to the result of calling [=fetch=] given |request|, with [=fetch/processResponse=] set to the following steps given a [=/response=] |raceNetworkRequestResponse|:
                       1. If |raceNetworkRequestResponse|'s [=response/status=] is [=ok status=], then:
-                          1. Set |raceResponse| to |raceNetworkRequestResponse|.
+                          1. Set |raceResponse|'s [=race response/value=] to |raceNetworkRequestResponse|.
                           1. [=queue/Enqueue=] |raceNetworkRequestResponse| to |queue|.
-                      1. Otherwise, set |raceResponse| to a [=network error=].
+                      1. Otherwise, set |raceResponse|'s [=race response/value=] to a [=network error=].
               1. [=If aborted=] and |raceFetchController| is not null, then:
                   1. [=fetch controller/abort=] |raceFetchController|.
-                  1. Set |raceResponse| to null.
+                  1. Set |raceResponse| to a [=race response=] whose [=race response/value=] is null.
               1. Resolve |preloadResponse| with undefined.
               1. Run the following substeps [=in parallel=]:
                   1. Let |fetchHandlerResponse| be the result of [=Create Fetch Event and Dispatch=] with |request|, |registration|, |useHighResPerformanceTimers|, |timingInfo|, |workerRealm|, |reservedClient|, |preloadResponse|, and |raceResponse|.
@@ -3242,7 +3242,7 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
       1. Else:
           1. Set |workerRealm| to the [=relevant realm=] of the |activeWorker|'s [=service worker/global object=].
           1. Set |eventHandled| to [=a new promise=] in |workerRealm|.
-          1. If |raceResponse| is not null, then:
+          1. If |raceResponse|'s [=race response/value=] is not null, then:
               1. Let |map| be |activeWorker|'s [=service worker/global object=]'s [=race response map=].
               1. [=map/Set=] |map|[|request|] to |raceResponse|.
           1. [=Queue a task=] |task| to run the following substeps:
@@ -3286,9 +3286,9 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
               1. If |eventHandled| is not null, then [=reject=] |eventHandled| with a "{{NetworkError}}" {{DOMException}} in |workerRealm|.
               2. Return a [=network error=].
           1. If |eventHandled| is not null, then [=resolve=] |eventHandled|.
-          1. If |raceResponse| is not null, then:
-              1. Wait until |raceResponse| is not "<code>pending</code>"
-              1. If |raceResponse| is [=/response=], return |raceResponse|.
+          1. If |raceResponse|'s [=race response/value=] is not null, then:
+              1. Wait until |raceResponse|'s [=race response/value=] is not "<code>pending</code>"
+              1. If |raceResponse|'s [=race response/value=] is [=/response=], return |raceResponse|'s [=race response/value=].
           1. Return null.
       1. If |handleFetchFailed| is true, then:
           1. If |eventHandled| is not null, then [=reject=] |eventHandled| with a "{{NetworkError}}" {{DOMException}} in |workerRealm|.
@@ -3933,7 +3933,7 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
       : Input
       :: |request|, a [=request=]
       : Output
-      :: a [=race response=].
+      :: a [=/response=], or null.
 
       1. If |request|'s [=request/reserved client=] is null, return null.
       1. Let |storage key| be the result of running [=obtain a storage key=] given |request|'s [=request/reserved client=].
@@ -3944,8 +3944,9 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
       1. If |map|[|request|] [=map/exist=], then:
         1. Let |entry| be |map|[|request|].
         1. [=map/Remove=] |map|[|request|].
-        1. Return |entry|.
-      1. Otherwise, return null.
+        1. Wait until |entry|'s [=race response/value=] is not "<code>pending</code>"
+        1. If |entry|'s [=race response/value=] is [=/response=], return |entry|'s [=race response/value=].
+      1. Return null.
   </section>
 </section>
 
