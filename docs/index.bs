@@ -1079,7 +1079,9 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
       };
     </pre>
 
-    A {{ServiceWorkerGlobalScope}} object represents the global execution context of a [=/service worker=]. A {{ServiceWorkerGlobalScope}} object has an associated <dfn export for="ServiceWorkerGlobalScope">service worker</dfn> (a [=/service worker=]). A {{ServiceWorkerGlobalScope}} object has an associated <dfn for="ServiceWorkerGlobalScope">force bypass cache for import scripts flag</dfn>. A {{ServiceWorkerGlobalScope}} object has an associated <dfn for="ServiceWorkerGlobalScope">race response map</dfn> which is an [=ordered map=] where the [=map/keys=] are [=requests=] and the [=map/values=] are <a>promises</a>. It is initially unset.
+    A {{ServiceWorkerGlobalScope}} object represents the global execution context of a [=/service worker=]. A {{ServiceWorkerGlobalScope}} object has an associated <dfn export for="ServiceWorkerGlobalScope">service worker</dfn> (a [=/service worker=]). A {{ServiceWorkerGlobalScope}} object has an associated <dfn for="ServiceWorkerGlobalScope">force bypass cache for import scripts flag</dfn>. A {{ServiceWorkerGlobalScope}} object has an associated <dfn for="ServiceWorkerGlobalScope">race response map</dfn> which is an [=ordered map=] where the [=map/keys=] are [=requests=] and the [=map/values=] are [=race response=]. It is initially unset.
+
+    A <dfn export id="dfn-race-response">race response</dfn> is a [=struct=] used to contain the network response when {{RouterSourceEnum/"race-network-and-fetch-handler"}} performs. It has [=/response=], or "<code>pending</code>" as an [=struct/item=].
 
     Note: {{ServiceWorkerGlobalScope}} object provides generic, event-driven, time-limited script execution contexts that run at an origin. Once successfully <a>registered</a>, a [=/service worker=] is started, kept alive and killed by their relationship to events, not [=/service worker clients=]. Any type of synchronous requests must not be initiated inside of a [=/service worker=].
 
@@ -3164,7 +3166,7 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
                       1. If |raceNetworkRequestResponse|'s [=response/status=] is [=ok status=], then:
                           1. Set |raceResponse| to |raceNetworkRequestResponse|.
                           1. [=queue/Enqueue=] |raceNetworkRequestResponse| to |queue|.
-                      1. Otherwise, set |raceResponse| to a `TypeError`.
+                      1. Otherwise, set |raceResponse| to a [=network error=].
               1. [=If aborted=] and |raceFetchController| is not null, then:
                   1. [=fetch controller/abort=] |raceFetchController|.
                   1. Set |raceResponse| to null.
@@ -3210,7 +3212,7 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
       :: |workerRealm|, a [=relevant realm=] of the [=service worker/global object=]
       :: |reservedClient|, a [=request/reserved client=]
       :: |preloadResponse|, a [=promise=]
-      :: |raceResponse|, a null, "<code>pending</code>" or [=/response=]
+      :: |raceResponse|, a [=race response=]
       : Output
       :: a [=/response=]
 
@@ -3931,7 +3933,7 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
       : Input
       :: |request|, a [=request=]
       : Output
-      :: a [=promise=].
+      :: a [=race response=].
 
       1. If |request|'s [=request/reserved client=] is null, return null.
       1. Let |storage key| be the result of running [=obtain a storage key=] given |request|'s [=request/reserved client=].
