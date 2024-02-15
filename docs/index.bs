@@ -3161,6 +3161,7 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
               1. Let |queue| be an empty [=queue=] of [=/response=].
               1. Let |raceFetchController| be null.
               1. Set |raceResponse|'s [=race response/value=] to "<code>pending</code>".
+              1. [=map/Set=] |activeWorker|'s [=service worker/global object=]'s [=race response map=][|request|] to |raceResponse|.
               1. Run the following substeps [=in parallel=], but [=abort when=] |controller|'s [=fetch controller/state=] is "<code>terminated</code>" or "<code>aborted</code>":
                   1. Set |raceFetchController| to the result of calling [=fetch=] given |request|, with [=fetch/processResponse=] set to the following steps given a [=/response=] |raceNetworkRequestResponse|:
                       1. If |raceNetworkRequestResponse|'s [=response/status=] is [=ok status=], then:
@@ -3226,6 +3227,7 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
       1. Let |shouldSoftUpdate| be true if any of the following are true, and false otherwise:
           * |request| is a [=non-subresource request=].
           * |request| is a [=subresource request=] and |registration| is [=stale=].
+      1. Let |raceResponseMap| be |activeWorker|'s [=service worker/global object=]'s [=race response map=].
       1. If the result of running the [=Should Skip Event=] algorithm with "fetch" and |activeWorker| is true, then:
           1. If |shouldSoftUpdate| is true, then [=in parallel=] run the [=Soft Update=] algorithm with |registration|.
           1. Return null.
@@ -3242,9 +3244,6 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
       1. Else:
           1. Set |workerRealm| to the [=relevant realm=] of the |activeWorker|'s [=service worker/global object=].
           1. Set |eventHandled| to [=a new promise=] in |workerRealm|.
-          1. If |raceResponse|'s [=race response/value=] is not null, then:
-              1. Let |map| be |activeWorker|'s [=service worker/global object=]'s [=race response map=].
-              1. [=map/Set=] |map|[|request|] to |raceResponse|.
           1. [=Queue a task=] |task| to run the following substeps:
               1. Let |e| be the result of <a>creating an event</a> with {{FetchEvent}}.
               1. Let |controller| be a [=new=] {{AbortController}} object with |workerRealm|.
@@ -3281,6 +3280,7 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
 
       1. Wait for |task| to have executed or for |handleFetchFailed| to be true.
       1. If |shouldSoftUpdate| is true, then [=in parallel=] run the [=Soft Update=] algorithm with |registration|.
+      1. If |raceResponseMap|[|request|] [=map/exists=], [=map/remove=] |raceResponseMap|[|request|].
       1. If |respondWithEntered| is false, then:
           1. If |eventCanceled| is true, then:
               1. If |eventHandled| is not null, then [=reject=] |eventHandled| with a "{{NetworkError}}" {{DOMException}} in |workerRealm|.
@@ -3931,7 +3931,7 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
     <h3 id="lookup-race-response-algorithm"><dfn export>Lookup Race Response</dfn></h3>
 
       : Input
-      :: |request|, a [=request=]
+      :: |request|, a [=/request=]
       : Output
       :: a [=/response=], or null.
 
@@ -3941,7 +3941,7 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
       1. If |registration| is null or |registration|'s <a>active worker</a> is null, return null.
       1. Else, let |activeWorker| be |registration|'s <a>active worker</a>.
       1. Let |map| be |activeWorker|'s [=service worker/global object=]'s [=race response map=].
-      1. If |map|[|request|] [=map/exist=], then:
+      1. If |map|[|request|] [=map/exists=], then:
         1. Let |entry| be |map|[|request|].
         1. [=map/Remove=] |map|[|request|].
         1. Wait until |entry|'s [=race response/value=] is not "<code>pending</code>"
