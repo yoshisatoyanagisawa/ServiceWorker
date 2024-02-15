@@ -208,7 +208,7 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
 
     A [=/service worker=] has an associated <dfn>all fetch listeners are empty flag</dfn>. It is initially unset.
 
-    A [=/service worker=] has an associated <dfn>list of router rules</dfn> (a [=list=]) whose [=list/item=] is a {{RouterRule}}. It is initially an empty [=list=].
+    A [=/service worker=] has an associated <dfn>list of router rules</dfn> (a [=list=] of {{RouterRule}}s). It is initially an empty [=list=].
 
     A [=/service worker=] is said to be <dfn>running</dfn> if its [=event loop=] is running.
 
