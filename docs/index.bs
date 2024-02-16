@@ -3161,7 +3161,6 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
               1. Let |queue| be an empty [=queue=] of [=/response=].
               1. Let |raceFetchController| be null.
               1. Set |raceResponse|'s [=race response/value=] to "<code>pending</code>".
-              1. [=map/Set=] |activeWorker|'s [=service worker/global object=]'s [=race response map=][|request|] to |raceResponse|.
               1. Run the following substeps [=in parallel=], but [=abort when=] |controller|'s [=fetch controller/state=] is "<code>terminated</code>" or "<code>aborted</code>":
                   1. Set |raceFetchController| to the result of calling [=fetch=] given |request|, with [=fetch/processResponse=] set to the following steps given a [=/response=] |raceNetworkRequestResponse|:
                       1. If |raceNetworkRequestResponse|'s [=response/status=] is [=ok status=], then:
@@ -3244,6 +3243,7 @@ spec: storage; urlPrefix: https://storage.spec.whatwg.org/
       1. Else:
           1. Set |workerRealm| to the [=relevant realm=] of the |activeWorker|'s [=service worker/global object=].
           1. Set |eventHandled| to [=a new promise=] in |workerRealm|.
+          1. If |raceResponse| is not null, [=map/set=] |raceResponseMap|[|request|] to |raceResponse|.
           1. [=Queue a task=] |task| to run the following substeps:
               1. Let |e| be the result of <a>creating an event</a> with {{FetchEvent}}.
               1. Let |controller| be a [=new=] {{AbortController}} object with |workerRealm|.
